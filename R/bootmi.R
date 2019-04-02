@@ -8,7 +8,7 @@
 #' @return A list of imputed datasets
 #' @export
 impute <- function(obsdata, impfun, B=200, M=2, ...) {
-  imps <- vector("list", B*M+1)
+  imps <- vector("list", B*M)
   count <- 1
   for (b in 1:B) {
     #take bootstrap sample
@@ -19,16 +19,15 @@ impute <- function(obsdata, impfun, B=200, M=2, ...) {
       count <- count + 1
     }
   }
-  imps[[count]] <- c(B,M)
-  names(imps[[count]]) <- c("B", "M")
+  attributes(imps) <- list(B=B, M=M)
 
   #return list of imputations
   imps
 }
 
 bootmi_analyse <- function(imps, analysisfun, ...) {
-  B <- imps[[length(imps)]]['B']
-  M <- imps[[length(imps)]]['M']
+  B <- attributes(imps)$B
+  M <- attributes(imps)$M
   ests <- array(0, dim=c(B,M))
   count <- 1
   for (b in 1:B) {
@@ -39,5 +38,25 @@ bootmi_analyse <- function(imps, analysisfun, ...) {
   }
 
   #fit one way model
+   collapsedData <- data.frame(bsNum=1:B, impNum=sort(rep((1:M),B)), est=c(ests))
+   print(collapsedData)
+  randIntMod <- lme4::lmer(est~1+(1|bsNum), data=collapsedData)
+  randIntVar <- as.data.frame(lme4::VarCorr(randIntMod))[1,4]
+  resVar <- as.data.frame(lme4::VarCorr(randIntMod))[2,4]
+
+  pointEstimate <- mean(ests)
+  print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
+  print(paste("Between bootstrap variance: ", randIntVar, sep=""))
+  print(paste("Within bootstrap / between imputation variance: ", resVar, sep=""))
+  varEstimate <- (1+1/B)*randIntVar + resVar/(B*M)
+
+  # msw <- resVar
+  # msb <- randIntVar*M + msw
+  # vhDf <- ((msb*(bsSamples+1)+msw*((bsSamples-1)/bsM-bsSamples-1))^2) /
+  #   (((msb*(bsSamples+1))^2/(bsSamples-1)) + (msw*(((bsSamples-1)/bsM-bsSamples-1)^2))/(bsSamples*(bsM-1)))
+  # marCI[sim,6,] <- c(marEstimates[sim,6]-qt(0.975,vhDf)*marVarEstimates[sim,6]^0.5,
+  #                    marEstimates[sim,6]+qt(0.975,vhDf)*marVarEstimates[sim,6]^0.5)
+  result <- c(pointEstimate, varEstimate)
+  result
 }
 
