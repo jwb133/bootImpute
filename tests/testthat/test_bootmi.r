@@ -7,7 +7,7 @@ simData <- data.frame(x,y)
 myimp <- function(inputData) {
   mod <- lm(y~x, data=inputData)
   imp <- inputData
-  imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(n)
+  imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
   imp
 }
 
