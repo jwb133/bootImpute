@@ -38,11 +38,17 @@ bootmi_analyse <- function(imps, analysisfun, ...) {
   }
 
   #fit one way model
-   collapsedData <- data.frame(bsNum=1:B, impNum=sort(rep((1:M),B)), est=c(ests))
-   print(collapsedData)
-  randIntMod <- lme4::lmer(est~1+(1|bsNum), data=collapsedData)
-  randIntVar <- as.data.frame(lme4::VarCorr(randIntMod))[1,4]
-  resVar <- as.data.frame(lme4::VarCorr(randIntMod))[2,4]
+  SSE <- sum((ests-rowMeans(ests))^2)
+  SSA <- M*sum((rowMeans(ests)-mean(ests))^2)
+  MSE <- SSE/(B*(M-1))
+  MSA <- SSA/(B-1)
+  resVar <- MSE
+  randIntVar <- (MSA-MSE)/M
+  if (randIntVar<0) {
+    randIntVar <- 0
+    resVar <- (SSE+SSA)/(B*M-1)
+  }
+
 
   pointEstimate <- mean(ests)
   print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
