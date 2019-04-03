@@ -1,4 +1,4 @@
-#' Bootstrap then impute a partially observed dataset.
+#' Bootstrap then impute a partially observed dataset
 #'
 #' @param obsdata The data frame to be imputed.
 #' @param impfun A function which will will impute the missing values.
@@ -25,6 +25,15 @@ impute <- function(obsdata, impfun, B=200, M=2, ...) {
   imps
 }
 
+#' Analyse bootstrapped and imputed estimates
+#'
+#' @param imps The list of imputed datasets returned by \code{impute}
+#' @param analysisfun A function which when applied to a single dataset returns
+#' the estimate of the parameter(s) of interest.
+#' @param ... Other parameters that are to be passed through to \code{analysisfun}.
+#' @return A vector containing the point estimate(s), variance estimates, and
+#' degrees of freedom.
+#' @export
 bootmi_analyse <- function(imps, analysisfun, ...) {
   B <- attributes(imps)$B
   M <- attributes(imps)$M
@@ -38,31 +47,28 @@ bootmi_analyse <- function(imps, analysisfun, ...) {
   }
 
   #fit one way model
-  SSE <- sum((ests-rowMeans(ests))^2)
-  SSA <- M*sum((rowMeans(ests)-mean(ests))^2)
-  MSE <- SSE/(B*(M-1))
-  MSA <- SSA/(B-1)
-  resVar <- MSE
-  randIntVar <- (MSA-MSE)/M
+  SSW <- sum((ests-rowMeans(ests))^2)
+  SSB <- M*sum((rowMeans(ests)-mean(ests))^2)
+  MSW <- SSW/(B*(M-1))
+  MSB <- SSB/(B-1)
+  resVar <- MSW
+  randIntVar <- (MSB-MSW)/M
   if (randIntVar<0) {
     randIntVar <- 0
-    resVar <- (SSE+SSA)/(B*M-1)
+    resVar <- (SSW+SSB)/(B*M-1)
   }
-
-
   pointEstimate <- mean(ests)
+  varEstimate <- (1+1/B)*randIntVar + resVar/(B*M)
+  df <- (varEstimate^2)/((((B+1)/(B*M))^2*MSB^2 / (B-1)) + MSW^2/(B*M^2*(M-1)))
+
   print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
   print(paste("Between bootstrap variance: ", randIntVar, sep=""))
   print(paste("Within bootstrap / between imputation variance: ", resVar, sep=""))
-  varEstimate <- (1+1/B)*randIntVar + resVar/(B*M)
+  print(paste("Degrees of freedom: ", df, sep=""))
 
-  # msw <- resVar
-  # msb <- randIntVar*M + msw
-  # vhDf <- ((msb*(bsSamples+1)+msw*((bsSamples-1)/bsM-bsSamples-1))^2) /
-  #   (((msb*(bsSamples+1))^2/(bsSamples-1)) + (msw*(((bsSamples-1)/bsM-bsSamples-1)^2))/(bsSamples*(bsM-1)))
-  # marCI[sim,6,] <- c(marEstimates[sim,6]-qt(0.975,vhDf)*marVarEstimates[sim,6]^0.5,
-  #                    marEstimates[sim,6]+qt(0.975,vhDf)*marVarEstimates[sim,6]^0.5)
-  result <- c(pointEstimate, varEstimate)
+  result <- c(pointEstimate, varEstimate, randIntVar, resVar, df)
+  names(result) <- c("Point estimate", "Variance", "Between bootstrap var.",
+                    "Between imputation var.", "DF")
   result
 }
 

@@ -11,7 +11,7 @@ myimp <- function(inputData) {
   imp
 }
 
-result <- impute(simData, myimp, B=10, M=2)
+result <- impute(simData, myimp, B=200, M=2)
 
 myanalysis <- function(data) {
   mean(data$y)

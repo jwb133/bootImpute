@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootmi.R
 \name{impute}
 \alias{impute}
-\title{Bootstrap then impute a partially observed dataset.}
+\title{Bootstrap then impute a partially observed dataset}
 \usage{
 impute(obsdata, impfun, B = 200, M = 2, ...)
 }
@@ -21,5 +21,5 @@ impute(obsdata, impfun, B = 200, M = 2, ...)
 A list of imputed datasets
 }
 \description{
-Bootstrap then impute a partially observed dataset.
+Bootstrap then impute a partially observed dataset
 }
