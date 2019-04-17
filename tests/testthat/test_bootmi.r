@@ -1,20 +1,30 @@
-n <- 100
-x <- rnorm(n)
-y <- x+rnorm(n)
-y[1:50] <- NA
-simData <- data.frame(x,y)
+library(bootmi)
 
-myimp <- function(inputData) {
-  mod <- lm(y~x, data=inputData)
-  imp <- inputData
-  imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
-  imp
-}
+context("bootmi testing")
 
-result <- impute(simData, myimp, B=200, M=2)
+test_that("Impute and analyse functions run when they should", {
+  expect_error({
+    set.seed(1234)
 
-myanalysis <- function(data) {
-  mean(data$y)
-}
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
 
-result2 <- bootmi_analyse(result, myanalysis)
+    myimp <- function(inputData) {
+      mod <- lm(y~x, data=inputData)
+      imp <- inputData
+      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      imp
+    }
+
+    result <- impute(simData, myimp, B=200, M=2)
+
+    myanalysis <- function(data) {
+      mean(data$y)
+    }
+
+    result2 <- bootmi_analyse(result, myanalysis)
+  }, NA)
+})
