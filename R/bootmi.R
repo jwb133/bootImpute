@@ -7,20 +7,20 @@
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
 #' @return A list of imputed datasets
 #' @export
-impute <- function(obsdata, impfun, B=200, M=2, ...) {
+impute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
   n <- dim(obsdata)[1]
-  imps <- vector("list", B*M)
+  imps <- vector("list", nBoot*nImp)
   count <- 1
-  for (b in 1:B) {
+  for (b in 1:nBoot) {
     #take bootstrap sample
     bsIndices <- sample(1:n, replace=TRUE)
-    #impute M times
-    for (m in 1:M) {
+    #impute nImp times
+    for (m in 1:nImp) {
       imps[[count]] <- impfun(obsdata[bsIndices,], ...)
       count <- count + 1
     }
   }
-  attributes(imps) <- list(B=B, M=M)
+  attributes(imps) <- list(nBoot=nBoot, nImp=nImp)
 
   #return list of imputations
   imps
@@ -36,12 +36,12 @@ impute <- function(obsdata, impfun, B=200, M=2, ...) {
 #' degrees of freedom.
 #' @export
 bootmi_analyse <- function(imps, analysisfun, ...) {
-  B <- attributes(imps)$B
-  M <- attributes(imps)$M
-  ests <- array(0, dim=c(B,M))
+  nBoot <- attributes(imps)$nBoot
+  nImp <- attributes(imps)$nImp
+  ests <- array(0, dim=c(nBoot,nImp))
   count <- 1
-  for (b in 1:B) {
-    for (m in 1:M) {
+  for (b in 1:nBoot) {
+    for (m in 1:nImp) {
       ests[b,m] <- analysisfun(imps[[count]],...)
       count <- count + 1
     }
@@ -49,18 +49,18 @@ bootmi_analyse <- function(imps, analysisfun, ...) {
 
   #fit one way model
   SSW <- sum((ests-rowMeans(ests))^2)
-  SSB <- M*sum((rowMeans(ests)-mean(ests))^2)
-  MSW <- SSW/(B*(M-1))
-  MSB <- SSB/(B-1)
+  SSB <- nImp*sum((rowMeans(ests)-mean(ests))^2)
+  MSW <- SSW/(nBoot*(nImp-1))
+  MSB <- SSB/(nBoot-1)
   resVar <- MSW
-  randIntVar <- (MSB-MSW)/M
+  randIntVar <- (MSB-MSW)/nImp
   if (randIntVar<0) {
     randIntVar <- 0
-    resVar <- (SSW+SSB)/(B*M-1)
+    resVar <- (SSW+SSB)/(nBoot*nImp-1)
   }
   pointEstimate <- mean(ests)
-  varEstimate <- (1+1/B)*randIntVar + resVar/(B*M)
-  df <- (varEstimate^2)/((((B+1)/(B*M))^2*MSB^2 / (B-1)) + MSW^2/(B*M^2*(M-1)))
+  varEstimate <- (1+1/nBoot)*randIntVar + resVar/(nBoot*nImp)
+  df <- (varEstimate^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
 
   print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
   print(paste("Between bootstrap variance: ", randIntVar, sep=""))
