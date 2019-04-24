@@ -8,6 +8,7 @@
 #' @return A list of imputed datasets
 #' @export
 impute <- function(obsdata, impfun, B=200, M=2, ...) {
+  n <- dim(obsdata)[1]
   imps <- vector("list", B*M)
   count <- 1
   for (b in 1:B) {
