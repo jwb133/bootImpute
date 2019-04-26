@@ -32,10 +32,11 @@ impute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 #' @param analysisfun A function which when applied to a single dataset returns
 #' the estimate of the parameter(s) of interest.
 #' @param ... Other parameters that are to be passed through to \code{analysisfun}.
+#' @param quiet Specify whether to print output or not.
 #' @return A vector containing the point estimate(s), variance estimates, and
 #' degrees of freedom.
 #' @export
-bootmi_analyse <- function(imps, analysisfun, ...) {
+bootmi_analyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   nBoot <- attributes(imps)$nBoot
   nImp <- attributes(imps)$nImp
   ests <- array(0, dim=c(nBoot,nImp))
@@ -62,10 +63,12 @@ bootmi_analyse <- function(imps, analysisfun, ...) {
   varEstimate <- (1+1/nBoot)*randIntVar + resVar/(nBoot*nImp)
   df <- (varEstimate^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
 
-  print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
-  print(paste("Between bootstrap variance: ", randIntVar, sep=""))
-  print(paste("Within bootstrap / between imputation variance: ", resVar, sep=""))
-  print(paste("Degrees of freedom: ", df, sep=""))
+  if (quiet==FALSE) {
+    print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
+    print(paste("Between bootstrap variance: ", randIntVar, sep=""))
+    print(paste("Within bootstrap / between imputation variance: ", resVar, sep=""))
+    print(paste("Degrees of freedom: ", df, sep=""))
+  }
 
   result <- c(pointEstimate, varEstimate, randIntVar, resVar, df)
   names(result) <- c("Point estimate", "Variance", "Between bootstrap var.",

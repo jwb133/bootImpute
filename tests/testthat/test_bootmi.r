@@ -19,7 +19,7 @@ test_that("Impute and analyse functions run when they should", {
       imp
     }
 
-    result <- impute(simData, myimp, B=200, M=2)
+    result <- impute(simData, myimp, nBoot=200, nImp=2)
 
     myanalysis <- function(data) {
       mean(data$y)
