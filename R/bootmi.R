@@ -62,6 +62,8 @@ bootmi_analyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   pointEstimate <- mean(ests)
   varEstimate <- (1+1/nBoot)*randIntVar + resVar/(nBoot*nImp)
   df <- (varEstimate^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
+  #prevent df from going below 3
+  df <- max(3,df)
 
   if (quiet==FALSE) {
     print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
