@@ -1,5 +1,3 @@
-library(bootmi)
-
 context("bootmi testing")
 
 test_that("Impute and analyse functions run when they should", {
@@ -19,12 +17,13 @@ test_that("Impute and analyse functions run when they should", {
       imp
     }
 
-    result <- impute(simData, myimp, nBoot=200, nImp=2)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2)
 
     myanalysis <- function(data) {
-      mean(data$y)
+      mod <- lm(y~x, data=data)
+      coef(mod)
     }
 
-    result2 <- bootmi_analyse(result, myanalysis)
+    result2 <- bootImputeAnalyse(result, myanalysis)
   }, NA)
 })
