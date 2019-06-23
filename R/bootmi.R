@@ -86,6 +86,7 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   resTable[,5] <- 2*pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
 
   colnames(resTable) <- c("Estimate", "Std. error", "95% CI lower", "95% CI upper", "p")
+  rownames(resTable) <- names(firstResult)
   print(resTable)
 
   list(ests=est, var=var, ci=ci, df=df)
