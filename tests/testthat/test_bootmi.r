@@ -28,3 +28,27 @@ test_that("Impute and analyse functions run when they should", {
     result2 <- bootImputeAnalyse(result, myanalysis)
   }, NA)
 })
+
+test_that("Testing bootMice works", {
+  expect_error({
+    if (requireNamespace("mice", quietly = TRUE)) {
+      library(mice)
+      set.seed(564764)
+      #bootstrap 10 times and impute each twice
+      imps <- bootMice(ex_linquad, nBoot=10, nImp=2)
+    }
+  }, NA)
+})
+
+test_that("Testing bootSmcfcs works", {
+  expect_error({
+    if (requireNamespace("smcfcs", quietly = TRUE)) {
+      library(mice)
+      set.seed(564764)
+      #bootstrap 10 times and impute each twice
+      imps <- bootSmcfcs(ex_linquad, nBoot=10, nImp=2,
+                         smtype="lm", smformula="y~z+x+xsq",
+                         method=c("","","norm","x^2",""))
+    }
+  }, NA)
+})

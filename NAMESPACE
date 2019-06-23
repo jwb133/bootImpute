@@ -2,3 +2,5 @@
 
 export(bootImpute)
 export(bootImputeAnalyse)
+export(bootMice)
+export(bootSmcfcs)

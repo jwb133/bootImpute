@@ -12,15 +12,39 @@ bootImpute(obsdata, impfun, nBoot = 200, nImp = 2, ...)
 \item{impfun}{A function which when passed an incomplete dataset will
 return a single imputed dataset.}
 
+\item{nBoot}{The number of bootstrap samples to take. It is recommended
+that you use a minimum of 200.}
+
+\item{nImp}{The number of times to impute each bootstrap sample. Two
+is recommended.}
+
 \item{...}{Other parameters that are to be passed through to \code{impfun}.}
-
-\item{B}{The number of bootstrap samples to take.}
-
-\item{M}{The number of times to impute each bootstrap sample.}
 }
 \value{
-A list of imputed datasets
+A list of imputed datasets.
 }
 \description{
-Bootstrap then impute an incomplete dataset
+Bootstraps an incomplete dataset and then imputes each bootstrap a number
+of times. The resulting list of bootstrapped then imputed datasets can
+be analysed with \code{\link{bootImputeAnalyse}}.
+}
+\examples{
+#this example shows how you can use bootImpute to impute using the mice
+#package. If you do want to impute using MICE you can instead use the
+#bootMice function, which essentially contains the code below
+if (requireNamespace("mice", quietly = TRUE)) {
+  library(mice)
+
+  set.seed(564764)
+
+  #write a wrapper function to call mice with one imputation and return
+  #the imputed dataset
+  impOnce <- function(inputData) {
+    oneImp <- mice::mice(inputData, m=1)
+    mice::complete(oneImp)
+  }
+
+  #bootstrap 10 times and impute each twice
+  imps <- bootImpute(ex_linquad, impOnce, nBoot=10, nImp=2)
+}
 }

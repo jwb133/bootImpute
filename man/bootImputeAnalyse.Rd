@@ -7,19 +7,27 @@
 bootImputeAnalyse(imps, analysisfun, ..., quiet = FALSE)
 }
 \arguments{
-\item{imps}{The list of imputed datasets returned by \code{bootImpute}}
+\item{imps}{The list of imputed datasets returned by \code{\link{bootImpute}}}
 
 \item{analysisfun}{A function which when applied to a single dataset returns
 the estimate of the parameter(s) of interest.}
 
 \item{...}{Other parameters that are to be passed through to \code{analysisfun}.}
 
-\item{quiet}{Specify whether to print output or not.}
+\item{quiet}{Specify whether to print a table of estimates, confidence intervals
+and p-values.}
 }
 \value{
 A vector containing the point estimate(s), variance estimates, and
 degrees of freedom.
 }
 \description{
-Analyse bootstrapped and imputed estimates
+Applies the user specified analysis function to each imputed dataset contained
+in \code{imps}, then calculates estimates, confidence intervals and p-values
+for each parameter, as proposed by von Hippel (2018).
+}
+\references{
+von Hippel PT. Maximum likelihood multiple imputation: faster,
+more efficient imputation without posterior draws. arXiv, 2018, 1210.0870
+ \url{https://arxiv.org/pdf/1210.0870.pdf}
 }

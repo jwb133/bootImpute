@@ -1,12 +1,21 @@
 #' Bootstrap then impute an incomplete dataset
 #'
+#' Bootstraps an incomplete dataset and then imputes each bootstrap a number
+#' of times. The resulting list of bootstrapped then imputed datasets can
+#' be analysed with \code{\link{bootImputeAnalyse}}.
+#'
 #' @param obsdata The data frame to be imputed.
 #' @param impfun A function which when passed an incomplete dataset will
 #' return a single imputed dataset.
-#' @param B The number of bootstrap samples to take.
-#' @param M The number of times to impute each bootstrap sample.
+#' @param nBoot The number of bootstrap samples to take. It is recommended
+#' that you use a minimum of 200.
+#' @param nImp The number of times to impute each bootstrap sample. Two
+#' is recommended.
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
-#' @return A list of imputed datasets
+#' @return A list of imputed datasets.
+#'
+#' @example data-raw/bootImputeExamples.r
+#'
 #' @export
 bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
   n <- dim(obsdata)[1]
@@ -29,13 +38,23 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 
 #' Analyse bootstrapped and imputed estimates
 #'
-#' @param imps The list of imputed datasets returned by \code{bootImpute}
+#' Applies the user specified analysis function to each imputed dataset contained
+#' in \code{imps}, then calculates estimates, confidence intervals and p-values
+#' for each parameter, as proposed by von Hippel (2018).
+#'
+#' @param imps The list of imputed datasets returned by \code{\link{bootImpute}}
 #' @param analysisfun A function which when applied to a single dataset returns
 #' the estimate of the parameter(s) of interest.
 #' @param ... Other parameters that are to be passed through to \code{analysisfun}.
-#' @param quiet Specify whether to print output or not.
+#' @param quiet Specify whether to print a table of estimates, confidence intervals
+#' and p-values.
 #' @return A vector containing the point estimate(s), variance estimates, and
 #' degrees of freedom.
+#'
+#' @references von Hippel PT. Maximum likelihood multiple imputation: faster,
+#' more efficient imputation without posterior draws. arXiv, 2018, 1210.0870
+#'  \url{https://arxiv.org/pdf/1210.0870.pdf}
+#'
 #' @export
 bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   nBoot <- attributes(imps)$nBoot
@@ -78,16 +97,18 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
     ci[i,] <- c(est[i]-qt(0.975,df[i])*var[i]^0.5, est[i]+qt(0.975,df[i])*var[i]^0.5)
   }
 
-  resTable <- array(0, dim=c(nParms,5))
-  resTable[,1] <- est
-  resTable[,2] <- var^0.5
-  resTable[,3] <- ci[,1]
-  resTable[,4] <- ci[,2]
-  resTable[,5] <- 2*pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
+  if (quiet==FALSE) {
+    resTable <- array(0, dim=c(nParms,5))
+    resTable[,1] <- est
+    resTable[,2] <- var^0.5
+    resTable[,3] <- ci[,1]
+    resTable[,4] <- ci[,2]
+    resTable[,5] <- 2*pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
 
-  colnames(resTable) <- c("Estimate", "Std. error", "95% CI lower", "95% CI upper", "p")
-  rownames(resTable) <- names(firstResult)
-  print(resTable)
+    colnames(resTable) <- c("Estimate", "Std. error", "95% CI lower", "95% CI upper", "p")
+    rownames(resTable) <- names(firstResult)
+    print(resTable)
+  }
 
   list(ests=est, var=var, ci=ci, df=df)
 }
