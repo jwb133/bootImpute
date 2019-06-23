@@ -1,4 +1,4 @@
-Package: bootmi
+Package: bootImpute
 Type: Package
 Title: Bootstrap inference for multiple imputation
 Version: 0.1.0

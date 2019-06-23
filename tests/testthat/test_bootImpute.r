@@ -1,4 +1,4 @@
-context("bootmi testing")
+context("bootImpute testing")
 
 test_that("Impute and analyse functions run when they should", {
   expect_error({

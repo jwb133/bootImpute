@@ -4,9 +4,17 @@
 #' of times. The resulting list of bootstrapped then imputed datasets can
 #' be analysed with \code{\link{bootImputeAnalyse}}.
 #'
+#' The function can be used any kind of multiple imputation procedure. The
+#' \code{impfun} must be a function which when passed an incomplete datasets
+#' and possibly additional arguments, returns a single imputed data frame. Depending
+#' on what imputation function returns by default, you may need to write a small
+#' wrapper function that calls the imputation procedure once and returns the
+#' imputed dataset. See the Example for an illustration with the \code{mice}
+#' package.
+#'
 #' @param obsdata The data frame to be imputed.
 #' @param impfun A function which when passed an incomplete dataset will
-#' return a single imputed dataset.
+#' return a single imputed data frame.
 #' @param nBoot The number of bootstrap samples to take. It is recommended
 #' that you use a minimum of 200.
 #' @param nImp The number of times to impute each bootstrap sample. Two
