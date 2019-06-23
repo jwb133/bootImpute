@@ -1,4 +1,4 @@
 library(testthat)
-library(bootmi)
+library(bootImpute)
 
-test_check("bootmi")
+test_check("bootImpute")
