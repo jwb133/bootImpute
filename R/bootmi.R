@@ -72,18 +72,21 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
     }
     est[i] <- mean(ests[,,i])
     var[i] <- (1+1/nBoot)*randIntVar + resVar/(nBoot*nImp)
-    df <- (var[i]^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
+    df[i] <- (var[i]^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
     #prevent df from going below 3
-    df[i] <- max(3,df)
+    df[i] <- max(3,df[i])
     ci[i,] <- c(est[i]-qt(0.975,df[i])*var[i]^0.5, est[i]+qt(0.975,df[i])*var[i]^0.5)
   }
 
-  # if (quiet==FALSE) {
-  #   print(paste("Boot MI point estimate: ", pointEstimate, sep=""))
-  #   print(paste("Between bootstrap variance: ", randIntVar, sep=""))
-  #   print(paste("Within bootstrap / between imputation variance: ", resVar, sep=""))
-  #   print(paste("Degrees of freedom: ", df, sep=""))
-  # }
+  resTable <- array(0, dim=c(nParms,5))
+  resTable[,1] <- est
+  resTable[,2] <- var^0.5
+  resTable[,3] <- ci[,1]
+  resTable[,4] <- ci[,2]
+  resTable[,5] <- 2*pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
+
+  colnames(resTable) <- c("Estimate", "Std. error", "95% CI lower", "95% CI upper", "p")
+  print(resTable)
 
   list(ests=est, var=var, ci=ci, df=df)
 }

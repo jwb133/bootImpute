@@ -20,7 +20,8 @@ test_that("Impute and analyse functions run when they should", {
     result <- bootImpute(simData, myimp, nBoot=200, nImp=2)
 
     myanalysis <- function(data) {
-      mod <- lm(y~x, data=data)
+      data$x2 <- data$x^2
+      mod <- lm(y~x+x2, data=data)
       coef(mod)
     }
 
