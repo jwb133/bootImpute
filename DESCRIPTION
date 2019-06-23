@@ -6,6 +6,8 @@ Author: Jonathan Bartlett
 Maintainer: Jonathan Bartlett <j.w.bartlett@bath.ac.uk>
 Description: Bootstraps and imputes incomplete datasets, and then performs inference
   on estimates obtained from analysing the imputed datasets.
+Depends:
+    R (>= 2.10)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

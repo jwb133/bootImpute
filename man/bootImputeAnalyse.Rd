@@ -26,6 +26,23 @@ Applies the user specified analysis function to each imputed dataset contained
 in \code{imps}, then calculates estimates, confidence intervals and p-values
 for each parameter, as proposed by von Hippel (2018).
 }
+\examples{
+#this example imputes using bootMice then analyses
+if (requireNamespace("mice", quietly = TRUE)) {
+  library(mice)
+
+  set.seed(564764)
+
+  imps <- bootMice(ex_linquad, nBoot=10, nImp=2)
+
+  #analyse estimates
+  #write a wapper to analyse an imputed dataset
+  analyseImp <- function(inputData) {
+    coef(lm(y~z+x+xsq,data=inputData))
+  }
+  ests <- bootImputeAnalyse(imps, analyseImp)
+}
+}
 \references{
 von Hippel PT. Maximum likelihood multiple imputation: faster,
 more efficient imputation without posterior draws. arXiv, 2018, 1210.0870

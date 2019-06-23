@@ -55,6 +55,11 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 #' more efficient imputation without posterior draws. arXiv, 2018, 1210.0870
 #'  \url{https://arxiv.org/pdf/1210.0870.pdf}
 #'
+#' @import stats
+#'
+#' @example data-raw/bootImputeAnalyseExamples.r
+#'
+#'
 #' @export
 bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   nBoot <- attributes(imps)$nBoot
@@ -94,7 +99,7 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
     df[i] <- (var[i]^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
     #prevent df from going below 3
     df[i] <- max(3,df[i])
-    ci[i,] <- c(est[i]-qt(0.975,df[i])*var[i]^0.5, est[i]+qt(0.975,df[i])*var[i]^0.5)
+    ci[i,] <- c(est[i]-stats::qt(0.975,df[i])*var[i]^0.5, est[i]+stats::qt(0.975,df[i])*var[i]^0.5)
   }
 
   if (quiet==FALSE) {
@@ -103,7 +108,7 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
     resTable[,2] <- var^0.5
     resTable[,3] <- ci[,1]
     resTable[,4] <- ci[,2]
-    resTable[,5] <- 2*pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
+    resTable[,5] <- 2*stats::pt(abs(est/var^0.5), df=df,lower.tail = FALSE)
 
     colnames(resTable) <- c("Estimate", "Std. error", "95% CI lower", "95% CI upper", "p")
     rownames(resTable) <- names(firstResult)
