@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootMice.R
 \name{bootMice}
 \alias{bootMice}
-\title{Bootstrap then impute using MICE}
+\title{Bootstrap then impute using mice}
 \usage{
 bootMice(obsdata, nBoot = 200, nImp = 2, ...)
 }
@@ -22,7 +22,7 @@ A list of imputed datasets.
 }
 \description{
 Bootstraps an incomplete dataset and then imputes each bootstrap a number
-of times using the MICE package. The resulting list of bootstrapped then
+of times using the mice package. The resulting list of bootstrapped then
 imputed datasets can be analysed with \code{\link{bootImputeAnalyse}}.
 To run this function requires the \code{mice} package to be installed.
 }
