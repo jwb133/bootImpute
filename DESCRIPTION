@@ -1,7 +1,7 @@
 Package: bootImpute
 Type: Package
 Title: Bootstrap inference for multiple imputation
-Version: 0.1.0
+Version: 1.0.0
 Author: Jonathan Bartlett
 Maintainer: Jonathan Bartlett <j.w.bartlett@bath.ac.uk>
 Description: Bootstraps and imputes incomplete datasets, and then performs inference
