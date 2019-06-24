@@ -29,6 +29,27 @@ test_that("Impute and analyse functions run when they should", {
   }, NA)
 })
 
+test_that("Random intercept var zero warning check", {
+  expect_warning({
+    set.seed(1234)
+    n <- 100
+    x <- c(rep(1,n/2), rep(NA,n/2))
+    simData <- data.frame(id=1:n, x=x)
+    myimp <- function(inputData) {
+      imp <- inputData
+      imp$x[is.na(inputData$x)] <- 1
+      imp
+    }
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2)
+
+    myanalysis <- function(inputData) {
+      mean(inputData$x)
+    }
+
+    result2 <- bootImputeAnalyse(result, myanalysis)
+  })
+})
+
 test_that("Testing bootMice works", {
   expect_error({
     if (requireNamespace("mice", quietly = TRUE)) {

@@ -98,7 +98,8 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
     MSB <- SSB/(nBoot-1)
     resVar <- MSW
     randIntVar <- (MSB-MSW)/nImp
-    if (randIntVar<0) {
+    if (randIntVar <= 0) {
+      warning(paste("Parameter ",i," has an estimated between bootstrap variance of zero. You should re-run with a larger nBoot value.",sep=""))
       randIntVar <- 0
       resVar <- (SSW+SSB)/(nBoot*nImp-1)
     }
