@@ -1,6 +1,6 @@
 Package: bootImpute
 Type: Package
-Title: Bootstrap inference for multiple imputation
+Title: Bootstrap Inference for Multiple Imputation
 Version: 1.0.0
 Author: Jonathan Bartlett
 Maintainer: Jonathan Bartlett <j.w.bartlett@bath.ac.uk>

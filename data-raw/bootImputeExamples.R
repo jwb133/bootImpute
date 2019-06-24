@@ -13,6 +13,7 @@ if (requireNamespace("mice", quietly = TRUE)) {
     mice::complete(oneImp)
   }
 
-  #bootstrap 10 times and impute each twice
-  imps <- bootImpute(ex_linquad, impOnce, nBoot=10, nImp=2)
+  #bootstrap twice and impute each twice
+  #in practice you should bootstrap many more times, e.g. at least 200
+  imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2)
 }
