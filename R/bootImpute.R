@@ -26,6 +26,9 @@
 #'
 #' @export
 bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
+  if (nBoot<200) {
+    warning("It is recommended to use at least 200 bootstraps.")
+  }
   n <- dim(obsdata)[1]
   imps <- vector("list", nBoot*nImp)
   count <- 1

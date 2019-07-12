@@ -29,7 +29,28 @@ test_that("Impute and analyse functions run when they should", {
   }, NA)
 })
 
-test_that("Random intercept var zero warning check", {
+test_that("bootImpute warns when less than 200 bootstraps used", {
+  expect_warning({
+    set.seed(1234)
+
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
+
+    myimp <- function(inputData) {
+      mod <- lm(y~x, data=inputData)
+      imp <- inputData
+      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      imp
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=2, nImp=2)
+  })
+})
+
+test_that("bootImputeAnalyse random intercept var zero warning check", {
   expect_warning({
     set.seed(1234)
     n <- 100
