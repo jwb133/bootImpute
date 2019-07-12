@@ -17,10 +17,6 @@
 #'
 #' @export
 bootSmcfcs <- function(obsdata, nBoot=200, nImp=2, ...) {
-  if (!requireNamespace("smcfcs", quietly = TRUE)) {
-    stop("Package \"smcfcs\" needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
   bootImpute(obsdata, smcfcsImpOnce, nBoot=nBoot, nImp=nImp, ...)
 }
 

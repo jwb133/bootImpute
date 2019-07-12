@@ -17,10 +17,6 @@
 #'
 #' @export
 bootMice <- function(obsdata, nBoot=200, nImp=2, ...) {
-  if (!requireNamespace("mice", quietly = TRUE)) {
-    stop("Package \"mice\" needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
   bootImpute(obsdata, miceImpOnce, nBoot=nBoot, nImp=nImp, ...)
 }
 
