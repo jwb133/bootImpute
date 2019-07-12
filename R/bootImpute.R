@@ -63,8 +63,8 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 #' degrees of freedom.
 #'
 #' @references von Hippel PT. Maximum likelihood multiple imputation: faster,
-#' more efficient imputation without posterior draws. arXiv, 2018, 1210.0870
-#'  \url{https://arxiv.org/pdf/1210.0870.pdf}
+#' more efficient imputation without posterior draws. arXiv, 2018, 1210.0870v9
+#'  \url{https://arxiv.org/pdf/1210.0870v9.pdf}
 #'
 #' @import stats
 #'
