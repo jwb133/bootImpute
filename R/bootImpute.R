@@ -62,9 +62,9 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 #' @return A vector containing the point estimate(s), variance estimates, and
 #' degrees of freedom.
 #'
-#' @references von Hippel PT. Maximum likelihood multiple imputation: faster,
-#' more efficient imputation without posterior draws. arXiv, 2018, 1210.0870v9
-#'  \url{https://arxiv.org/pdf/1210.0870v9.pdf}
+#' @references von Hippel PT, Bartlett JW. Maximum likelihood multiple imputation: faster,
+#' more efficient imputation without posterior draws. arXiv, 2019, 1210.0870v10
+#'  \url{https://arxiv.org/pdf/1210.0870v10.pdf}
 #'
 #' @import stats
 #'
