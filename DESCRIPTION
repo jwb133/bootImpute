@@ -1,7 +1,7 @@
 Package: bootImpute
 Type: Package
 Title: Bootstrap Inference for Multiple Imputation
-Version: 1.0.1
+Version: 1.1.1
 Author: Jonathan Bartlett
 Maintainer: Jonathan Bartlett <j.w.bartlett@bath.ac.uk>
 Description: Bootstraps and imputes incomplete datasets. Then performs inference on estimates obtained from analysing the imputed datasets as proposed by von Hippel and Bartlett (2019) <arXiv:1210.0870v10>.
