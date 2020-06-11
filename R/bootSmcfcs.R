@@ -6,8 +6,6 @@
 #' To run this function requires the \code{smcfcs} package to be installed.
 #'
 #' @param obsdata The data frame to be imputed.
-#' @param impfun A function which when passed an incomplete dataset will
-#' return a single imputed data frame.
 #' @param nBoot The number of bootstrap samples to take. It is recommended
 #' that you use a minimum of 200. If you specify \code{nCores>1}, \code{nBoot} must
 #' be a multiple of the specified \code{nCores} value.
@@ -22,7 +20,7 @@
 #' @example data-raw/bootSmcfcsExamples.r
 #'
 #' @export
-bootSmcfcs <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
+bootSmcfcs <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
   bootImpute(obsdata, smcfcsImpOnce, nBoot=nBoot, nImp=nImp, nCores=nCores, seed=seed, ...)
 }
 

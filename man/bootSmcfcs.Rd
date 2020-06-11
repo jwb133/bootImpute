@@ -4,21 +4,10 @@
 \alias{bootSmcfcs}
 \title{Bootstrap then impute using smcfcs}
 \usage{
-bootSmcfcs(
-  obsdata,
-  impfun,
-  nBoot = 200,
-  nImp = 2,
-  nCores = 1,
-  seed = NULL,
-  ...
-)
+bootSmcfcs(obsdata, nBoot = 200, nImp = 2, nCores = 1, seed = NULL, ...)
 }
 \arguments{
 \item{obsdata}{The data frame to be imputed.}
-
-\item{impfun}{A function which when passed an incomplete dataset will
-return a single imputed data frame.}
 
 \item{nBoot}{The number of bootstrap samples to take. It is recommended
 that you use a minimum of 200. If you specify \code{nCores>1}, \code{nBoot} must
