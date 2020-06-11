@@ -22,7 +22,7 @@
 #' @param nImp The number of times to impute each bootstrap sample. Two
 #' is recommended.
 #' @param nCores The number of CPU cores to use. If specified greater than one,
-#' bootImpute will impute using the number of cores specified.
+#' \code{bootImpute} will impute using the number of cores specified.
 #' @param seed Random number seed.
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
 #' @return A list of imputed datasets.
@@ -88,9 +88,12 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 #' @param imps The list of imputed datasets returned by \code{\link{bootImpute}}
 #' @param analysisfun A function which when applied to a single dataset returns
 #' the estimate of the parameter(s) of interest.
-#' @param ... Other parameters that are to be passed through to \code{analysisfun}.
+#' @param nCores The number of CPU cores to use. If specified greater than one,
+#' \code{bootImputeAnalyse} will impute using the number of cores specified. The
+#' number of bootstrap samples in \code{imps} should be divisible by \code{nCores}.
 #' @param quiet Specify whether to print a table of estimates, confidence intervals
 #' and p-values.
+#' @param ... Other parameters that are to be passed through to \code{analysisfun}.
 #' @return A vector containing the point estimate(s), variance estimates, and
 #' degrees of freedom.
 #'
@@ -104,7 +107,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 #'
 #'
 #' @export
-bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
+bootImputeAnalyse <- function(imps, analysisfun, nCores=1, quiet=FALSE, ...) {
   nBoot <- attributes(imps)$nBoot
   nImp <- attributes(imps)$nImp
 
@@ -112,11 +115,43 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   firstResult <- analysisfun(imps[[1]],...)
   nParms <- length(firstResult)
   ests <- array(0, dim=c(nBoot,nImp,nParms))
-  count <- 1
-  for (b in 1:nBoot) {
-    for (m in 1:nImp) {
-      ests[b,m,] <- analysisfun(imps[[count]],...)
-      count <- count + 1
+
+  if (nCores>1) {
+    #use multiple cores
+    if ((nBoot %% nCores)!=0) stop("nBoot must be divisible by nCores.")
+    nBootPerCore <- nBoot/nCores
+
+    #the setup_strategy argument here is to temporarily deal with
+    #this issue: https://github.com/rstudio/rstudio/issues/6692
+    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
+    parallel::clusterExport(cl, c("imps", "analysisfun", "nBootPerCore", "nImp", "nParms"),
+                            envir=environment())
+    parEsts <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+      estArray <- array(0, dim=c(nBootPerCore, nImp, nParms))
+      bootStart <- (no-1)*nBootPerCore+1
+      impToAnalyse <- (bootStart-1)*nImp + 1
+      for (i in 1:nBootPerCore) {
+        for (j in 1:nImp) {
+          estArray[i,j,] <- analysisfun(imps[[impToAnalyse]],...)
+          impToAnalyse <- impToAnalyse + 1
+        }
+      }
+      estArray
+    }, ...)
+    parallel::stopCluster(cl)
+
+    for (i in 1:nCores) {
+      ests[((i-1)*nBootPerCore+1):(i*nBootPerCore),,] <- parEsts[[i]]
+    }
+
+  } else {
+    #use single core
+    count <- 1
+    for (b in 1:nBoot) {
+      for (m in 1:nImp) {
+        ests[b,m,] <- analysisfun(imps[[count]],...)
+        count <- count + 1
+      }
     }
   }
 
@@ -160,5 +195,6 @@ bootImputeAnalyse <- function(imps, analysisfun, ..., quiet=FALSE) {
   }
 
   list(ests=est, var=var, ci=ci, df=df)
+
 }
 
