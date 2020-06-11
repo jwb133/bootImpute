@@ -28,7 +28,7 @@ be a multiple of the specified \code{nCores} value.}
 is recommended.}
 
 \item{nCores}{The number of CPU cores to use. If specified greater than one,
-bootImpute will impute using the number of cores specified.}
+\code{bootImpute} will impute using the number of cores specified.}
 
 \item{seed}{Random number seed.}
 
@@ -43,12 +43,13 @@ of times. The resulting list of bootstrapped then imputed datasets can
 be analysed with \code{\link{bootImputeAnalyse}}.
 }
 \details{
-The function can be used any kind of multiple imputation procedure. The
-\code{impfun} must be a function which when passed an incomplete datasets
+The \code{impfun} must be a function which when passed an incomplete datasets
 and possibly additional arguments, returns a single imputed data frame. Depending
 on what imputation function returns by default, you may need to write a small
 wrapper function that calls the imputation procedure once and returns the
 imputed dataset. See the Example for an illustration with the \code{mice}
+package. To improve computation times, \code{bootImpute} now supports
+multiple cores through the \code{nCores} argument which uses the \code{parallel}
 package.
 }
 \examples{

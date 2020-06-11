@@ -4,7 +4,7 @@
 \alias{bootImputeAnalyse}
 \title{Analyse bootstrapped and imputed estimates}
 \usage{
-bootImputeAnalyse(imps, analysisfun, ..., quiet = FALSE)
+bootImputeAnalyse(imps, analysisfun, nCores = 1, quiet = FALSE, ...)
 }
 \arguments{
 \item{imps}{The list of imputed datasets returned by \code{\link{bootImpute}}}
@@ -12,10 +12,14 @@ bootImputeAnalyse(imps, analysisfun, ..., quiet = FALSE)
 \item{analysisfun}{A function which when applied to a single dataset returns
 the estimate of the parameter(s) of interest.}
 
-\item{...}{Other parameters that are to be passed through to \code{analysisfun}.}
+\item{nCores}{The number of CPU cores to use. If specified greater than one,
+\code{bootImputeAnalyse} will impute using the number of cores specified. The
+number of bootstrap samples in \code{imps} should be divisible by \code{nCores}.}
 
 \item{quiet}{Specify whether to print a table of estimates, confidence intervals
 and p-values.}
+
+\item{...}{Other parameters that are to be passed through to \code{analysisfun}.}
 }
 \value{
 A vector containing the point estimate(s), variance estimates, and
