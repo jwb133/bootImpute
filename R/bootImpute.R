@@ -20,9 +20,9 @@
 #' be a multiple of the specified \code{nCores} value.
 #' @param nImp The number of times to impute each bootstrap sample. Two
 #' is recommended.
-#' @nCores The number of CPU cores to use. If specified greater than one,
+#' @param nCores The number of CPU cores to use. If specified greater than one,
 #' bootImpute will impute using the number of cores specified.
-#' @seed Random number seed.
+#' @param seed Random number seed.
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
 #' @return A list of imputed datasets.
 #'
@@ -51,8 +51,8 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
     parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"),
                             envir=environment())
     parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-      bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1)
-    })
+      bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1, ...)
+    }, ...)
     parallel::stopCluster(cl)
 
     imps <- do.call(c, parImps)
