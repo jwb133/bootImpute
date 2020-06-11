@@ -4,7 +4,7 @@
 \alias{bootImpute}
 \title{Bootstrap then impute an incomplete dataset}
 \usage{
-bootImpute(obsdata, impfun, nBoot = 200, nImp = 2, ...)
+bootImpute(obsdata, impfun, nBoot = 200, nImp = 2, nCores = 1, ...)
 }
 \arguments{
 \item{obsdata}{The data frame to be imputed.}
@@ -13,7 +13,8 @@ bootImpute(obsdata, impfun, nBoot = 200, nImp = 2, ...)
 return a single imputed data frame.}
 
 \item{nBoot}{The number of bootstrap samples to take. It is recommended
-that you use a minimum of 200.}
+that you use a minimum of 200. If you specify \code{nCores>1}, \code{nBoot} must
+be a multiple of the specified \code{nCores} value.}
 
 \item{nImp}{The number of times to impute each bootstrap sample. Two
 is recommended.}

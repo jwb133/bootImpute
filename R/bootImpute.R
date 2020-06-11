@@ -16,22 +16,44 @@
 #' @param impfun A function which when passed an incomplete dataset will
 #' return a single imputed data frame.
 #' @param nBoot The number of bootstrap samples to take. It is recommended
-#' that you use a minimum of 200.
+#' that you use a minimum of 200. If you specify \code{nCores>1}, \code{nBoot} must
+#' be a multiple of the specified \code{nCores} value.
 #' @param nImp The number of times to impute each bootstrap sample. Two
 #' is recommended.
+#' @nCores The number of CPU cores to use. If specified greater than one,
+#' bootImpute will impute using the number of cores specified.
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
 #' @return A list of imputed datasets.
 #'
 #' @example data-raw/bootImputeExamples.r
 #'
 #' @export
-bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
+bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
   if (nBoot<200) {
     warning("It is recommended to use at least 200 bootstraps.")
   }
   n <- dim(obsdata)[1]
   imps <- vector("list", nBoot*nImp)
   count <- 1
+
+  if (nCores>1) {
+    #use multiple cores
+    if ((nBoot %% nCores)!=0) stop("nBoot must be a multiple of nCores.")
+    nBootPerCore <- nBoot/nCores
+
+    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
+    parallel::clusterSetRNGStream(cl, 123)
+    parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"), envir=environment())
+#    parallel::clusterExport(cl, impfun, envir=environment())
+    parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+      bootImpute(obsdata, impfun, nBootPerCore, nImp, nCores=1)
+    })
+    stopCluster(cl)
+
+    parImps
+
+  } else {
+
   for (b in 1:nBoot) {
     #take bootstrap sample
     bsIndices <- sample(1:n, replace=TRUE)
@@ -45,6 +67,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, ...) {
 
   #return list of imputations
   imps
+  }
 }
 
 #' Analyse bootstrapped and imputed estimates
