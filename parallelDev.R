@@ -10,7 +10,7 @@ testdata <- data.frame(x=rnorm(100), y=rnorm(100))
 testdata$y[1:50] <- NA
 
 library(bootImpute)
-bootImpute(testdata, impOnce, nBoot=200, nImp=2, nCores=2)
+res <- bootImpute(testdata, impOnce, nBoot=6, nImp=2, nCores=2)
 
 
 nCores <- 2

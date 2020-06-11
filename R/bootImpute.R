@@ -44,30 +44,29 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
     cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
     parallel::clusterSetRNGStream(cl, 123)
     parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"), envir=environment())
-#    parallel::clusterExport(cl, impfun, envir=environment())
     parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-      bootImpute(obsdata, impfun, nBootPerCore, nImp, nCores=1)
+      bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1)
     })
     parallel::stopCluster(cl)
 
-    parImps
+    imps <- do.call(c, parImps)
 
   } else {
 
-  for (b in 1:nBoot) {
-    #take bootstrap sample
-    bsIndices <- sample(1:n, replace=TRUE)
-    #impute nImp times
-    for (m in 1:nImp) {
-      imps[[count]] <- impfun(obsdata[bsIndices,], ...)
-      count <- count + 1
+    for (b in 1:nBoot) {
+      #take bootstrap sample
+      bsIndices <- sample(1:n, replace=TRUE)
+      #impute nImp times
+      for (m in 1:nImp) {
+        imps[[count]] <- impfun(obsdata[bsIndices,], ...)
+        count <- count + 1
+      }
     }
   }
   attributes(imps) <- list(nBoot=nBoot, nImp=nImp)
 
   #return list of imputations
   imps
-  }
 }
 
 #' Analyse bootstrapped and imputed estimates
