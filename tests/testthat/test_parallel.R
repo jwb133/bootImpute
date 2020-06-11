@@ -1,6 +1,7 @@
 context("parallel bootImpute testing")
 
 test_that("Impute and analyse functions run when they should", {
+  skip_on_cran()
   expect_error({
     set.seed(1234)
     impOnce <- function(inputData) {
