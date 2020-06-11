@@ -1,7 +1,6 @@
 context("parallel bootImpute testing")
 
 test_that("Test bootImpute using multiple cores", {
-  skip_on_cran()
   expect_equal({
     set.seed(1234)
 
@@ -33,7 +32,6 @@ test_that("Test bootImpute using multiple cores", {
 })
 
 test_that("Test bootImpute using multiple cores with mice", {
-  skip_on_cran()
   expect_equal({
     set.seed(1234)
 
