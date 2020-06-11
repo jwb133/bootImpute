@@ -34,6 +34,9 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
   if (nBoot<200) {
     warning("It is recommended to use at least 200 bootstraps.")
   }
+  if ((nCores>1) & (is.null(seed))) {
+    stop("If you specify nCores>1 you must set a seed.")
+  }
   n <- dim(obsdata)[1]
   imps <- vector("list", nBoot*nImp)
   count <- 1
