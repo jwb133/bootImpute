@@ -48,7 +48,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
     parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
       bootImpute(obsdata, impfun, nBootPerCore, nImp, nCores=1)
     })
-    stopCluster(cl)
+    parallel::stopCluster(cl)
 
     parImps
 

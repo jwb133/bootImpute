@@ -9,7 +9,10 @@ impOnce <- function(inputData) {
 testdata <- data.frame(x=rnorm(100), y=rnorm(100))
 testdata$y[1:50] <- NA
 
-library(parallel)
+library(bootImpute)
+bootImpute(testdata, impOnce, nBoot=200, nImp=2, nCores=2)
+
+
 nCores <- 2
 cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
 parallel::clusterSetRNGStream(cl, 123)
