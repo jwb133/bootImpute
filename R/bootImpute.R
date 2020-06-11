@@ -22,13 +22,14 @@
 #' is recommended.
 #' @nCores The number of CPU cores to use. If specified greater than one,
 #' bootImpute will impute using the number of cores specified.
+#' @seed Random number seed.
 #' @param ... Other parameters that are to be passed through to \code{impfun}.
 #' @return A list of imputed datasets.
 #'
 #' @example data-raw/bootImputeExamples.r
 #'
 #' @export
-bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
+bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
   if (nBoot<200) {
     warning("It is recommended to use at least 200 bootstraps.")
   }
@@ -41,9 +42,14 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
     if ((nBoot %% nCores)!=0) stop("nBoot must be a multiple of nCores.")
     nBootPerCore <- nBoot/nCores
 
+    #the setup_strategy argument here is to temporarily deal with
+    #this issue: https://github.com/rstudio/rstudio/issues/6692
     cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
-    parallel::clusterSetRNGStream(cl, 123)
-    parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"), envir=environment())
+    if (!is.null(seed)) {
+      parallel::clusterSetRNGStream(cl, seed)
+    }
+    parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"),
+                            envir=environment())
     parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
       bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1)
     })
@@ -52,6 +58,9 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, ...) {
     imps <- do.call(c, parImps)
 
   } else {
+    if (!is.null(seed)) {
+      set.seed(seed)
+    }
 
     for (b in 1:nBoot) {
       #take bootstrap sample
