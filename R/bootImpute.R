@@ -41,6 +41,9 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
   imps <- vector("list", nBoot*nImp)
   count <- 1
 
+  #capture extra arguments into an object called args
+  args <- list(...)
+
   if (nCores>1) {
     #use multiple cores
     if ((nBoot %% nCores)!=0) stop("nBoot must be a multiple of nCores.")
@@ -48,15 +51,27 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 
     #the setup_strategy argument here is to temporarily deal with
     #this issue: https://github.com/rstudio/rstudio/issues/6692
-    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
+    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential", outfile="log.txt")
     if (!is.null(seed)) {
       parallel::clusterSetRNGStream(cl, seed)
     }
-    parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"),
-                            envir=environment())
-    parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-      bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1, ...)
-    }, ...)
+    dots <- list(...)
+    if (length(dots)==0) {
+      #no extra arguments to pass to imputation function
+      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"),
+                              envir=environment())
+      parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+        bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1)
+      })
+    } else {
+      #some extra arguments to pass to imputation function
+      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp", "dots"),
+                              envir=environment())
+      parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+        newarg <- c(list(obsdata=obsdata, impfun=impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1), dots)
+        do.call(bootImpute::bootImpute, newarg)
+      })
+    }
     parallel::stopCluster(cl)
 
     imps <- do.call(c, parImps)
