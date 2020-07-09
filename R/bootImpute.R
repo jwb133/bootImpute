@@ -9,7 +9,9 @@
 #' on what imputation function returns by default, you may need to write a small
 #' wrapper function that calls the imputation procedure once and returns the
 #' imputed dataset. See the Example for an illustration with the \code{mice}
-#' package. To improve computation times, \code{bootImpute} now supports
+#' package.
+#'
+#' To improve computation times, \code{bootImpute} now supports
 #' multiple cores through the \code{nCores} argument which uses the \code{parallel}
 #' package.
 #'
@@ -51,7 +53,8 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 
     #the setup_strategy argument here is to temporarily deal with
     #this issue: https://github.com/rstudio/rstudio/issues/6692
-    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential", outfile="log.txt")
+    #cl <- parallel::makeCluster(nCores, setup_strategy = "sequential", outfile="log.txt")
+    cl <- parallel::makeCluster(nCores)
     if (!is.null(seed)) {
       parallel::clusterSetRNGStream(cl, seed)
     }

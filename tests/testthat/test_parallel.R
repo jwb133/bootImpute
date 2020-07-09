@@ -31,7 +31,7 @@ test_that("Test bootImpute using multiple cores", {
   }, TRUE)
 })
 
-test_that("Test bootImpute using multiple cores with mice", {
+test_that("Test bootImpute runs using multiple cores with mice", {
   expect_equal({
     set.seed(1234)
 
@@ -42,17 +42,21 @@ test_that("Test bootImpute using multiple cores with mice", {
     simData <- data.frame(x,y)
 
     result <- bootMice(simData, nBoot=200, nImp=2, nCores=2, seed=123)
+  },NA)
+})
 
-    myanalysis <- function(data) {
-      data$x2 <- data$x^2
-      mod <- lm(y~x+x2, data=data)
-      coef(mod)
-    }
+test_that("Test bootImpute using multiple cores with mice with extra arguments", {
+  expect_equal({
+    set.seed(1234)
 
-    result2 <- bootImputeAnalyse(result, myanalysis)
-    result3 <- bootImputeAnalyse(result, myanalysis, nCores=2)
-    identical(result2, result3)
-  }, TRUE)
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
+
+    result <- bootMice(simData, nBoot=200, nImp=2, nCores=2, seed=123, maxit=1)
+  }, NA)
 })
 
 
