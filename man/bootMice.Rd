@@ -35,10 +35,8 @@ To run this function requires the \code{mice} package to be installed.
 \examples{
 library(mice)
 
-set.seed(564764)
-
 head(ex_linquad)
 
 #bootstrap 10 times and impute each twice
-imps <- bootMice(ex_linquad, nBoot=10, nImp=2)
+imps <- bootMice(ex_linquad, nBoot=10, nImp=2, seed=564764)
 }

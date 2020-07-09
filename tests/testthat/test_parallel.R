@@ -32,7 +32,7 @@ test_that("Test bootImpute using multiple cores", {
 })
 
 test_that("Test bootImpute runs using multiple cores with mice", {
-  expect_equal({
+  expect_error({
     set.seed(1234)
 
     n <- 100
@@ -45,8 +45,8 @@ test_that("Test bootImpute runs using multiple cores with mice", {
   },NA)
 })
 
-test_that("Test bootImpute using multiple cores with mice with extra arguments", {
-  expect_equal({
+test_that("Test bootImpute runs using multiple cores with mice with extra arguments", {
+  expect_error({
     set.seed(1234)
 
     n <- 100

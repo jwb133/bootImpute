@@ -52,9 +52,9 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
     nBootPerCore <- nBoot/nCores
 
     #the setup_strategy argument here is to temporarily deal with
-    #this issue: https://github.com/rstudio/rstudio/issues/6692
-    #cl <- parallel::makeCluster(nCores, setup_strategy = "sequential", outfile="log.txt")
-    cl <- parallel::makeCluster(nCores)
+    #this issue which affects Macs: https://github.com/rstudio/rstudio/issues/6692
+    cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
+    #cl <- parallel::makeCluster(nCores)
     if (!is.null(seed)) {
       parallel::clusterSetRNGStream(cl, seed)
     }

@@ -48,7 +48,9 @@ and possibly additional arguments, returns a single imputed data frame. Dependin
 on what imputation function returns by default, you may need to write a small
 wrapper function that calls the imputation procedure once and returns the
 imputed dataset. See the Example for an illustration with the \code{mice}
-package. To improve computation times, \code{bootImpute} now supports
+package.
+
+To improve computation times, \code{bootImpute} now supports
 multiple cores through the \code{nCores} argument which uses the \code{parallel}
 package.
 }
@@ -57,8 +59,6 @@ package.
 #package. If you do want to impute using MICE you can instead use the
 #bootMice function, which essentially contains the code below
 library(mice)
-
-set.seed(564764)
 
 #write a wrapper function to call mice with one imputation and return
 #the imputed dataset
@@ -69,5 +69,5 @@ impOnce <- function(inputData) {
 
 #bootstrap twice and impute each twice
 #in practice you should bootstrap many more times, e.g. at least 200
-imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2)
+imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2, seed=564764)
 }

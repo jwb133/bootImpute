@@ -3,8 +3,6 @@
 #bootMice function, which essentially contains the code below
 library(mice)
 
-set.seed(564764)
-
 #write a wrapper function to call mice with one imputation and return
 #the imputed dataset
 impOnce <- function(inputData) {
@@ -14,4 +12,4 @@ impOnce <- function(inputData) {
 
 #bootstrap twice and impute each twice
 #in practice you should bootstrap many more times, e.g. at least 200
-imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2)
+imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2, seed=564764)
