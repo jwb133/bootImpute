@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows install, R 3.6.1
+* local Windows install, R 4.0.2
 * Ubuntu 14.04.5 LTS, R 3.6.0
 * win-builder on release version 3.6.1 (2019-07-05)
 * win-builder on development (unstable) (2019-07-05 r76784)

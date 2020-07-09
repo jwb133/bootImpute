@@ -104,11 +104,15 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 #'
 #' Applies the user specified analysis function to each imputed dataset contained
 #' in \code{imps}, then calculates estimates, confidence intervals and p-values
-#' for each parameter, as proposed by von Hippel (2018).
+#' for each parameter, as proposed by von Hippel and Bartlett (2019).
+#'
+#' Multiple cores can be used by using the \code{nCores} argument, which may be
+#' useful for reducing computation times.
 #'
 #' @param imps The list of imputed datasets returned by \code{\link{bootImpute}}
 #' @param analysisfun A function which when applied to a single dataset returns
-#' the estimate of the parameter(s) of interest.
+#' the estimate of the parameter(s) of interest. The dataset to be analysed
+#' is passed to \code{analysisfun} as its first argument.
 #' @param nCores The number of CPU cores to use. If specified greater than one,
 #' \code{bootImputeAnalyse} will impute using the number of cores specified. The
 #' number of bootstrap samples in \code{imps} should be divisible by \code{nCores}.
@@ -145,20 +149,42 @@ bootImputeAnalyse <- function(imps, analysisfun, nCores=1, quiet=FALSE, ...) {
     #the setup_strategy argument here is to temporarily deal with
     #this issue: https://github.com/rstudio/rstudio/issues/6692
     cl <- parallel::makeCluster(nCores, setup_strategy = "sequential")
-    parallel::clusterExport(cl, c("imps", "analysisfun", "nBootPerCore", "nImp", "nParms"),
-                            envir=environment())
-    parEsts <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-      estArray <- array(0, dim=c(nBootPerCore, nImp, nParms))
-      bootStart <- (no-1)*nBootPerCore+1
-      impToAnalyse <- (bootStart-1)*nImp + 1
-      for (i in 1:nBootPerCore) {
-        for (j in 1:nImp) {
-          estArray[i,j,] <- analysisfun(imps[[impToAnalyse]],...)
-          impToAnalyse <- impToAnalyse + 1
+
+    dots <- list(...)
+    if (length(dots)==0) {
+      #no extra arguments to pass to analysis function
+      parallel::clusterExport(cl, c("imps", "analysisfun", "nBootPerCore", "nImp", "nParms"),
+                              envir=environment())
+      parEsts <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+        estArray <- array(0, dim=c(nBootPerCore, nImp, nParms))
+        bootStart <- (no-1)*nBootPerCore+1
+        impToAnalyse <- (bootStart-1)*nImp + 1
+        for (i in 1:nBootPerCore) {
+          for (j in 1:nImp) {
+            estArray[i,j,] <- analysisfun(imps[[impToAnalyse]])
+            impToAnalyse <- impToAnalyse + 1
+          }
         }
-      }
-      estArray
-    }, ...)
+        estArray
+      })
+    } else {
+      #some extra arguments to pass to analysis function
+      parallel::clusterExport(cl, c("imps", "analysisfun", "nBootPerCore", "nImp", "nParms", "dots"),
+                              envir=environment())
+      parEsts <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
+        estArray <- array(0, dim=c(nBootPerCore, nImp, nParms))
+        bootStart <- (no-1)*nBootPerCore+1
+        impToAnalyse <- (bootStart-1)*nImp + 1
+        for (i in 1:nBootPerCore) {
+          for (j in 1:nImp) {
+            newarg <- c(list(data=imps[[impToAnalyse]]), dots)
+            estArray[i,j,] <- do.call(analysisfun, newarg)
+            impToAnalyse <- impToAnalyse + 1
+          }
+        }
+        estArray
+      })
+    }
     parallel::stopCluster(cl)
 
     for (i in 1:nCores) {
