@@ -10,7 +10,8 @@ bootImputeAnalyse(imps, analysisfun, nCores = 1, quiet = FALSE, ...)
 \item{imps}{The list of imputed datasets returned by \code{\link{bootImpute}}}
 
 \item{analysisfun}{A function which when applied to a single dataset returns
-the estimate of the parameter(s) of interest.}
+the estimate of the parameter(s) of interest. The dataset to be analysed
+is passed to \code{analysisfun} as its first argument.}
 
 \item{nCores}{The number of CPU cores to use. If specified greater than one,
 \code{bootImputeAnalyse} will impute using the number of cores specified. The
@@ -28,7 +29,11 @@ degrees of freedom.
 \description{
 Applies the user specified analysis function to each imputed dataset contained
 in \code{imps}, then calculates estimates, confidence intervals and p-values
-for each parameter, as proposed by von Hippel (2018).
+for each parameter, as proposed by von Hippel and Bartlett (2019).
+}
+\details{
+Multiple cores can be used by using the \code{nCores} argument, which may be
+useful for reducing computation times.
 }
 \examples{
 library(mice)
