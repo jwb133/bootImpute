@@ -46,6 +46,16 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
   imps <- vector("list", nBoot*nImp)
   count <- 1
 
+  #check impfun returns what we want
+  newImps <- impfun(obsdata, ...)
+  #check newImps is a list of right type and length
+  if (typeof(newImps)!="list") {
+    stop("Your imputation function must return a list of imputed datasets.")
+  }
+  if (length(newImps)!=nImp) {
+    stop("Your imputation function must return the same number of imputed datasets as the value you specify for nImp.")
+  }
+
   #capture extra arguments into an object called args
   args <- list(...)
 
@@ -87,23 +97,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
       set.seed(seed)
     }
 
-    #take bootstrap sample
-    bsIndices <- sample(1:n, replace=TRUE)
-    #impute nImp times
-    newImps <- impfun(obsdata[bsIndices,], ...)
-    #check newImps is a list of right type and length
-    if (typeof(newImps)!="list") {
-      stop("Your imputation function must return a list of imputed datasets.")
-    }
-    if (length(newImps)!=nImp) {
-      stop("Your imputation function must return the same number of imputed datasets as the value you specify for nImp.")
-    }
-    for (m in 1:nImp) {
-      imps[[count]] <- newImps[[m]]
-      count <- count + 1
-    }
-
-    for (b in 2:nBoot) {
+    for (b in 1:nBoot) {
       #take bootstrap sample
       bsIndices <- sample(1:n, replace=TRUE)
       #impute nImp times

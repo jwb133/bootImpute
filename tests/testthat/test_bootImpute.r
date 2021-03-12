@@ -52,7 +52,7 @@ test_that("Should error when imp function does not return right number of imputa
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=3)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=3)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -81,7 +81,7 @@ test_that("Should error when imp function does not return a list", {
       imp
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -113,7 +113,7 @@ test_that("bootImpute warns when less than 200 bootstraps used", {
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=2, nImp=2, M=2)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2)
   })
 })
 
@@ -133,7 +133,7 @@ test_that("bootImputeAnalyse random intercept var zero warning check", {
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2)
 
     myanalysis <- function(inputData) {
       mean(inputData$x)

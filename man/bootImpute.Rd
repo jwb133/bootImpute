@@ -32,7 +32,9 @@ is recommended.}
 
 \item{seed}{Random number seed.}
 
-\item{...}{Other parameters that are to be passed through to \code{impfun}.}
+\item{...}{Other parameters that are to be passed through to \code{impfun},
+which will often include the argument that tells \code{impfun} to generate
+as many imputations as specified by the value passed to \code{nImp}.}
 }
 \value{
 A list of imputed datasets.
@@ -44,11 +46,12 @@ be analysed with \code{\link{bootImputeAnalyse}}.
 }
 \details{
 The \code{impfun} must be a function which when passed an incomplete datasets
-and possibly additional arguments, returns a single imputed data frame. Depending
-on what imputation function returns by default, you may need to write a small
-wrapper function that calls the imputation procedure once and returns the
-imputed dataset. See the Example for an illustration with the \code{mice}
-package.
+and possibly additional arguments, returns a list of (e.g. 2) imputed datasets.
+The number of imputed datasets that \code{impfun} returns should match the value
+you specify for the argument \code{nImp}. Depending on what your imputation function
+returns by default, you may need to write a small wrapper function that calls
+the imputation procedure and returns the list of \code{nImp} datasets.See the
+Example for an illustration with the \code{mice} package.
 
 To improve computation times, \code{bootImpute} now supports
 multiple cores through the \code{nCores} argument which uses the \code{parallel}

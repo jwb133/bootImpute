@@ -20,7 +20,7 @@ test_that("Test bootImputeAnalyse using multiple cores", {
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, M=2)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -55,7 +55,7 @@ test_that("Test bootImpute using multiple cores", {
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, nCores=2, seed=7234, M=2)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, nCores=2, seed=7234, M=2)
 
   }, NA)
 })
@@ -70,7 +70,7 @@ test_that("Test bootImpute runs using multiple cores with mice", {
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    result <- bootMice(simData, nBoot=200, nImp=2, nCores=2, seed=123)
+    result <- bootMice(simData, nBoot=20, nImp=2, nCores=2, seed=123)
   },NA)
 })
 
@@ -84,7 +84,7 @@ test_that("Test bootImpute runs using multiple cores with mice with extra argume
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    result <- bootMice(simData, nBoot=200, nImp=2, nCores=2, seed=123, maxit=1)
+    result <- bootMice(simData, nBoot=20, nImp=2, nCores=2, seed=123, maxit=1)
   }, NA)
 })
 
@@ -106,7 +106,7 @@ test_that("If you use nCores>1 you must set seed for bootImpute", {
       imp
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, nCores=2)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, nCores=2)
   })
 })
 
@@ -120,14 +120,17 @@ test_that("Test bootImputeAnalyse using multiple cores and additional analysisfu
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    myimp <- function(inputData) {
+    myimp <- function(inputData,M) {
       mod <- lm(y~x, data=inputData)
-      imp <- inputData
-      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
-      imp
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, nCores=2, seed=123)
+    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2, nCores=2, seed=123)
 
     myanalysis <- function(data) {
       mod <- lm(y~x, data=data)

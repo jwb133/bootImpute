@@ -30,7 +30,7 @@ miceImpM <- function(inputData,M, ...) {
   miceImps <- mice::mice(inputData, m=M, ...)
   imps <- vector("list", M)
   for (i in 1:M) {
-    imps[[i]] <- complete(miceImps,i)
+    imps[[i]] <- mice::complete(miceImps,i)
   }
   imps
 }
