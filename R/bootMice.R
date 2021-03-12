@@ -21,12 +21,16 @@
 #'
 #' @export
 bootMice <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
-  bootImpute(obsdata, miceImpOnce, nBoot=nBoot, nImp=nImp, nCores=nCores, seed=seed, ...)
+  bootImpute(obsdata, miceImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed, ...)
 }
 
-#a function that imputes once using mice with the specified options
-#and returns the imputed dataset
-miceImpOnce <- function(inputData, ...) {
-  oneImp <- mice::mice(inputData, m=1, ...)
-  mice::complete(oneImp)
+#a function that imputes M times using mice with the specified options
+#and returns the imputed datasets as a list
+miceImpM <- function(inputData,M, ...) {
+  miceImps <- mice::mice(inputData, m=M, ...)
+  imps <- vector("list", M)
+  for (i in 1:M) {
+    imps[[i]] <- complete(miceImps,i)
+  }
+  imps
 }

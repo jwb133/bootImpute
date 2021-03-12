@@ -1,6 +1,6 @@
 context("parallel bootImpute testing")
 
-test_that("Test bootImpute using multiple cores", {
+test_that("Test bootImputeAnalyse using multiple cores", {
   expect_equal({
     set.seed(1234)
 
@@ -10,14 +10,17 @@ test_that("Test bootImpute using multiple cores", {
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    myimp <- function(inputData) {
+    myimp <- function(inputData, M) {
       mod <- lm(y~x, data=inputData)
-      imp <- inputData
-      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
-      imp
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, nCores=2, seed=123)
+    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, M=2)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -29,6 +32,32 @@ test_that("Test bootImpute using multiple cores", {
     result3 <- bootImputeAnalyse(result, myanalysis, nCores=2)
     identical(result2, result3)
   }, TRUE)
+})
+
+
+test_that("Test bootImpute using multiple cores", {
+  expect_error({
+    set.seed(1234)
+
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
+
+    myimp <- function(inputData,M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, nCores=2, seed=7234, M=2)
+
+  }, NA)
 })
 
 test_that("Test bootImpute runs using multiple cores with mice", {

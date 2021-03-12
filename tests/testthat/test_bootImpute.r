@@ -10,14 +10,17 @@ test_that("Impute and analyse functions run when they should", {
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    myimp <- function(inputData) {
+    myimp <- function(inputData, M) {
       mod <- lm(y~x, data=inputData)
-      imp <- inputData
-      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
-      imp
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -27,6 +30,67 @@ test_that("Impute and analyse functions run when they should", {
 
     result2 <- bootImputeAnalyse(result, myanalysis)
   }, NA)
+})
+
+test_that("Should error when imp function does not return right number of imputations", {
+  expect_error({
+    set.seed(1234)
+
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=3)
+
+    myanalysis <- function(data) {
+      data$x2 <- data$x^2
+      mod <- lm(y~x+x2, data=data)
+      coef(mod)
+    }
+
+    result2 <- bootImputeAnalyse(result, myanalysis)
+  }, NULL)
+})
+
+test_that("Should error when imp function does not return a list", {
+  expect_error({
+    set.seed(1234)
+
+    n <- 100
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:50] <- NA
+    simData <- data.frame(x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imp <- inputData
+      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      imp
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
+
+    myanalysis <- function(data) {
+      data$x2 <- data$x^2
+      mod <- lm(y~x+x2, data=data)
+      coef(mod)
+    }
+
+    result2 <- bootImputeAnalyse(result, myanalysis)
+  }, NULL)
 })
 
 test_that("bootImpute warns when less than 200 bootstraps used", {
@@ -39,14 +103,17 @@ test_that("bootImpute warns when less than 200 bootstraps used", {
     y[1:50] <- NA
     simData <- data.frame(x,y)
 
-    myimp <- function(inputData) {
+    myimp <- function(inputData, M) {
       mod <- lm(y~x, data=inputData)
-      imp <- inputData
-      imp$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
-      imp
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=2, nImp=2)
+    result <- bootImpute(simData, myimp, nBoot=2, nImp=2, M=2)
   })
 })
 
@@ -56,12 +123,17 @@ test_that("bootImputeAnalyse random intercept var zero warning check", {
     n <- 100
     x <- c(rep(1,n/2), rep(NA,n/2))
     simData <- data.frame(id=1:n, x=x)
-    myimp <- function(inputData) {
-      imp <- inputData
-      imp$x[is.na(inputData$x)] <- 1
-      imp
+
+    myimp <- function(inputData, M) {
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$x[is.na(inputData$x)] <- 1
+      }
+      imps
     }
-    result <- bootImpute(simData, myimp, nBoot=200, nImp=2)
+
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
 
     myanalysis <- function(inputData) {
       mean(inputData$x)

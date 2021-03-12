@@ -21,12 +21,12 @@
 #'
 #' @export
 bootSmcfcs <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
-  bootImpute(obsdata, smcfcsImpOnce, nBoot=nBoot, nImp=nImp, nCores=nCores, seed=seed, ...)
+  bootImpute(obsdata, smcfcsImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed, ...)
 }
 
-#a function that imputes once using smcfcs with the specified options
-#and returns the imputed dataset
-smcfcsImpOnce <- function(inputData, ...) {
-  oneImp <- smcfcs::smcfcs(inputData, m=1, ...)
-  oneImp$impDatasets[[1]]
+#a function that imputes M times using smcfcs with the specified options
+#and returns the imputed datasets as a list
+smcfcsImpM <- function(inputData,M, ...) {
+  smcfcsImps <- smcfcs::smcfcs(inputData, m=M, ...)
+  smcfcsImps$impDatasets
 }
