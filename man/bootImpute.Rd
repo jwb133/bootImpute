@@ -63,14 +63,20 @@ package.
 #bootMice function, which essentially contains the code below
 library(mice)
 
-#write a wrapper function to call mice with one imputation and return
-#the imputed dataset
-impOnce <- function(inputData) {
-  oneImp <- mice::mice(inputData, m=1)
-  mice::complete(oneImp)
+#write a wrapper function to call mice generating M imputations
+impM <- function(inputData,M) {
+  miceImps <- mice::mice(inputData, m=M)
+  imps <- vector("list", M)
+  for (i in 1:M) {
+    imps[[i]] <- mice::complete(miceImps,i)
+  }
+  imps
 }
 
 #bootstrap twice and impute each twice
 #in practice you should bootstrap many more times, e.g. at least 200
-imps <- bootImpute(ex_linquad, impOnce, nBoot=2, nImp=2, seed=564764)
+#note you have to tell bootImpute how many imputations per bootstrap in
+#nImp=2 and also pass through whatever your imp function argument is called
+#for specifying number of imputations, which here is M=2.
+imps <- bootImpute(ex_linquad, impM, nBoot=2, nImp=2, M=2, seed=564764)
 }
