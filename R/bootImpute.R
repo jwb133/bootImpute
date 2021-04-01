@@ -18,7 +18,7 @@
 #'
 #' @param obsdata The data frame to be imputed.
 #' @param impfun A function which when passed an incomplete dataset will
-#' return a single imputed data frame.
+#' return a list of imputed data frames.
 #' @param nBoot The number of bootstrap samples to take. It is recommended
 #' that you use a minimum of 200. If you specify \code{nCores>1}, \code{nBoot} must
 #' be a multiple of the specified \code{nCores} value.

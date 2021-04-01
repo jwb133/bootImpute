@@ -36,7 +36,7 @@ test_that("Test bootImputeAnalyse using multiple cores", {
 
 
 test_that("Test bootImpute using multiple cores", {
-  expect_error({
+  expect_warning({
     set.seed(1234)
 
     n <- 100
@@ -57,11 +57,11 @@ test_that("Test bootImpute using multiple cores", {
 
     result <- bootImpute(simData, myimp, nBoot=20, nImp=2, nCores=2, seed=7234, M=2)
 
-  }, NA)
+  }, "It is recommended to use at least 200 bootstraps.")
 })
 
 test_that("Test bootImpute runs using multiple cores with mice", {
-  expect_error({
+  expect_warning({
     set.seed(1234)
 
     n <- 100
@@ -71,11 +71,11 @@ test_that("Test bootImpute runs using multiple cores with mice", {
     simData <- data.frame(x,y)
 
     result <- bootMice(simData, nBoot=20, nImp=2, nCores=2, seed=123)
-  },NA)
+  }, "It is recommended to use at least 200 bootstraps.")
 })
 
 test_that("Test bootImpute runs using multiple cores with mice with extra arguments", {
-  expect_error({
+  expect_warning({
     set.seed(1234)
 
     n <- 100
@@ -85,7 +85,7 @@ test_that("Test bootImpute runs using multiple cores with mice with extra argume
     simData <- data.frame(x,y)
 
     result <- bootMice(simData, nBoot=20, nImp=2, nCores=2, seed=123, maxit=1)
-  }, NA)
+  }, "It is recommended to use at least 200 bootstraps.")
 })
 
 
@@ -106,8 +106,8 @@ test_that("If you use nCores>1 you must set seed for bootImpute", {
       imp
     }
 
-    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, nCores=2)
-  })
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, nCores=2)
+  }, "If you specify nCores>1 you must set a seed.")
 })
 
 test_that("Test bootImputeAnalyse using multiple cores and additional analysisfun arguments", {
@@ -130,7 +130,7 @@ test_that("Test bootImputeAnalyse using multiple cores and additional analysisfu
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2, nCores=2, seed=123)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2, nCores=2, seed=123)
 
     myanalysis <- function(data) {
       mod <- lm(y~x, data=data)

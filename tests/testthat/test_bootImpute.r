@@ -52,7 +52,7 @@ test_that("Should error when imp function does not return right number of imputa
       imps
     }
 
-    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=3)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=3)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -81,7 +81,7 @@ test_that("Should error when imp function does not return a list", {
       imp
     }
 
-    result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2)
+    result <- bootImpute(simData, myimp, nBoot=200, nImp=2, M=2)
 
     myanalysis <- function(data) {
       data$x2 <- data$x^2
@@ -114,7 +114,7 @@ test_that("bootImpute warns when less than 200 bootstraps used", {
     }
 
     result <- bootImpute(simData, myimp, nBoot=20, nImp=2, M=2)
-  })
+  }, "It is recommended to use at least 200 bootstraps.")
 })
 
 test_that("bootImputeAnalyse random intercept var zero warning check", {
@@ -140,22 +140,22 @@ test_that("bootImputeAnalyse random intercept var zero warning check", {
     }
 
     result2 <- bootImputeAnalyse(result, myanalysis)
-  })
+  }, "Parameter 1 has an estimated between bootstrap variance of zero. You should re-run with a larger nBoot value.")
 })
 
 test_that("Testing bootMice works", {
-  expect_error({
+  expect_warning({
     if (requireNamespace("mice", quietly = TRUE)) {
       library(mice)
       set.seed(564764)
       #bootstrap 10 times and impute each twice
       imps <- bootMice(ex_linquad, nBoot=10, nImp=2)
     }
-  }, NA)
+  }, "It is recommended to use at least 200 bootstraps.")
 })
 
 test_that("Testing bootSmcfcs works", {
-  expect_error({
+  expect_warning({
     if (requireNamespace("smcfcs", quietly = TRUE)) {
       library(mice)
       set.seed(564764)
@@ -165,5 +165,5 @@ test_that("Testing bootSmcfcs works", {
                          smtype="lm", smformula="y~z+x+xsq",
                          method=c("","","norm","x^2",""))
     }
-  }, NA)
+  }, "It is recommended to use at least 200 bootstraps.")
 })
