@@ -29,7 +29,7 @@ degrees of freedom.
 \description{
 Applies the user specified analysis function to each imputed dataset contained
 in \code{imps}, then calculates estimates, confidence intervals and p-values
-for each parameter, as proposed by von Hippel and Bartlett (2019).
+for each parameter, as proposed by von Hippel and Bartlett (2021).
 }
 \details{
 Multiple cores can be used by using the \code{nCores} argument, which may be
@@ -53,6 +53,6 @@ ests <- bootImputeAnalyse(imps, analyseImp)
 }
 \references{
 von Hippel PT, Bartlett JW. Maximum likelihood multiple imputation: faster,
-more efficient imputation without posterior draws. arXiv, 2019, 1210.0870v10
- \url{https://arxiv.org/pdf/1210.0870v10.pdf}
+more efficient imputation without posterior draws. Statistical Science, 2021, 36(3):400-420
+ \url{https://doi.org/10.1214/20-STS793}
 }
