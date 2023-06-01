@@ -138,7 +138,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 #'
 #' @references von Hippel PT, Bartlett JW. Maximum likelihood multiple imputation: faster,
 #' more efficient imputation without posterior draws. Statistical Science, 2021, 36(3):400-420
-#'  \doi<10.1214/20-STS793>
+#'  \doi{10.1214/20-STS793}
 #'
 #' @import stats
 #'
