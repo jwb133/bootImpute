@@ -128,7 +128,7 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 #' the estimate of the parameter(s) of interest. The dataset to be analysed
 #' is passed to \code{analysisfun} as its first argument.
 #' @param nCores The number of CPU cores to use. If specified greater than one,
-#' \code{bootImputeAnalyse} will impute using the number of cores specified. The
+#' \code{bootImputeAnalyse} will use the number of cores specified. The
 #' number of bootstrap samples in \code{imps} should be divisible by \code{nCores}.
 #' @param quiet Specify whether to print a table of estimates, confidence intervals
 #' and p-values.
