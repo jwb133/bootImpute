@@ -1,3 +1,6 @@
+# 1.2.2
+Updating example and test that use ex_linquad from smcfcs package
+
 # 1.2.1
 Updating Jonathan's contact email address and reference to published paper by von Hippel and Bartlett (2021) in Statistical Science.
 

@@ -12,6 +12,6 @@ xobsxb <- (y-mean(y))/sd(y)
 xobspr <- exp(xobsxb)/(1+exp(xobsxb))
 x[runif(n)>xobspr] <- NA
 
-ex_linquad <- data.frame(y,z,x,xsq=x^2,v)
+linquad <- data.frame(y,z,x,v)
 
-usethis::use_data(ex_linquad, overwrite=TRUE)
+usethis::use_data(linquad, overwrite=TRUE)

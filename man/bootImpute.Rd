@@ -78,5 +78,5 @@ impM <- function(inputData,M) {
 #note you have to tell bootImpute how many imputations per bootstrap in
 #nImp=2 and also pass through whatever your imp function argument is called
 #for specifying number of imputations, which here is M=2.
-imps <- bootImpute(ex_linquad, impM, nBoot=2, nImp=2, M=2, seed=564764)
+imps <- bootImpute(linquad, impM, nBoot=2, nImp=2, M=2, seed=564764)
 }
