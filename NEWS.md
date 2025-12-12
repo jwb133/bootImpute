@@ -1,3 +1,6 @@
+# 1.3.0
+Functionality for stratified bootstrap sampling added.
+
 # 1.2.2
 Updating example and test that use ex_linquad from smcfcs package
 
