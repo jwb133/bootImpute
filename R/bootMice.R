@@ -14,14 +14,17 @@
 #' @param nCores The number of CPU cores to use. If specified greater than one,
 #' bootImpute will impute using the number of cores specified.
 #' @param seed Random number seed.
+#' @param strata Character name of variable to perform stratified resampling, if desired.
 #' @param ... Other arguments that are to be passed to \code{mice}.
 #' @return A list of imputed datasets.
 #'
 #' @example data-raw/bootMiceExamples.r
 #'
 #' @export
-bootMice <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
-  bootImpute(obsdata, miceImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed, ...)
+bootMice <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL,
+                     strata=NULL, ...) {
+  bootImpute(obsdata, miceImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed,
+             strata=strata, ...)
 }
 
 #a function that imputes M times using mice with the specified options

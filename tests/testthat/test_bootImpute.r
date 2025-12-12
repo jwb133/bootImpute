@@ -167,3 +167,118 @@ test_that("Testing bootSmcfcs works", {
     }
   }, "It is recommended to use at least 200 bootstraps.")
 })
+
+test_that("Testing stratified sampling works with numeric strata", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- c(rep(0,n/2), rep(1,n/2))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=2, nImp=2, M=2,
+                         strata="sex")
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})
+
+test_that("Testing stratified sampling works with character strata", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- c(rep("m",n/2), rep("f",n/2))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=2, nImp=2, M=2,
+                         strata="sex")
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})
+
+test_that("Testing stratified sampling works with factor strata", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- factor(c(rep("m",n/2), rep("f",n/2)))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=2, nImp=2, M=2,
+                         strata="sex")
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})
+
+test_that("Testing stratified sampling works with bootMice", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- factor(c(rep("m",n/2), rep("f",n/2)))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    result <- bootMice(simData, nBoot=2, nImp=2, strata="sex")
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})
+
+test_that("Testing stratified sampling works with bootSmcfcs", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- factor(c(rep("m",n/2), rep("f",n/2)))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    result <- bootSmcfcs(simData, nBoot=2, nImp=2, strata="sex",
+                         smtype="lm", smformula="x~y+sex",
+                         method=c("","","norm"))
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})

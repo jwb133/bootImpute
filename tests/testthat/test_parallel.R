@@ -149,3 +149,32 @@ test_that("Test bootImputeAnalyse using multiple cores and additional analysisfu
     identical(result2, result3)
   }, TRUE)
 })
+
+
+test_that("Testing stratified sampling works with parallel", {
+  expect_identical({
+    set.seed(1234)
+
+    n <- 100
+    sex <- factor(c(rep("m",n/2), rep("f",n/2)))
+    x <- rnorm(n)
+    y <- x+rnorm(n)
+    y[1:25] <- NA
+    simData <- data.frame(sex,x,y)
+
+    myimp <- function(inputData, M) {
+      mod <- lm(y~x, data=inputData)
+      imps <- vector("list", M)
+      for (i in 1:M) {
+        imps[[i]] <- inputData
+        imps[[i]]$y[is.na(inputData$y)] <- coef(mod)[1]+coef(mod)[2]*inputData$x[is.na(inputData$y)]+rnorm(sum(is.na(inputData$y)))
+      }
+      imps
+    }
+
+    result <- bootImpute(simData, myimp, nBoot=10, nImp=2, M=2, seed=12612,
+                         strata="sex", nCores=2)
+
+    as.numeric(table(result[[1]]$sex))
+  }, c(50,50))
+})

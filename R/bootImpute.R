@@ -27,6 +27,7 @@
 #' @param nCores The number of CPU cores to use. If specified greater than one,
 #' \code{bootImpute} will impute using the number of cores specified.
 #' @param seed Random number seed.
+#' @param strata Character name of variable to perform stratified resampling, if desired.
 #' @param ... Other parameters that are to be passed through to \code{impfun},
 #' which will often include the argument that tells \code{impfun} to generate
 #' as many imputations as specified by the value passed to \code{nImp}.
@@ -35,7 +36,8 @@
 #' @example data-raw/bootImputeExamples.r
 #'
 #' @export
-bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
+bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL,
+                       strata=NULL,...) {
   if (nBoot<200) {
     warning("It is recommended to use at least 200 bootstraps.")
   }
@@ -74,17 +76,20 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
     dots <- list(...)
     if (length(dots)==0) {
       #no extra arguments to pass to imputation function
-      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp"),
+      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp", "strata"),
                               envir=environment())
       parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-        bootImpute::bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1)
+        bootImpute::bootImpute(obsdata, impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1,
+                               strata=strata)
       })
     } else {
       #some extra arguments to pass to imputation function
-      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp", "dots"),
+      parallel::clusterExport(cl, c("obsdata", "impfun", "nBootPerCore", "nImp",
+                                    "strata", "dots"),
                               envir=environment())
       parImps <- parallel::parLapply(cl, X=1:nCores, fun = function(no){
-        newarg <- c(list(obsdata=obsdata, impfun=impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1), dots)
+        newarg <- c(list(obsdata=obsdata, impfun=impfun, nBoot=nBootPerCore, nImp=nImp, nCores=1,
+                         strata=strata), dots)
         do.call(bootImpute::bootImpute, newarg)
       })
     }
@@ -99,7 +104,11 @@ bootImpute <- function(obsdata, impfun, nBoot=200, nImp=2, nCores=1, seed=NULL, 
 
     for (b in 1:nBoot) {
       #take bootstrap sample
-      bsIndices <- sample(1:n, replace=TRUE)
+      if (is.null(strata)) {
+        bsIndices <- sample(1:n, replace=TRUE)
+      } else {
+        bsIndices <- strataSample(obsdata[,strata])
+      }
       #impute nImp times
       newImps <- impfun(obsdata[bsIndices,], ...)
       for (m in 1:nImp) {
@@ -259,3 +268,13 @@ bootImputeAnalyse <- function(imps, analysisfun, nCores=1, quiet=FALSE, ...) {
 
 }
 
+strataSample <- function(strata) {
+  # stratified bootstrap sample with replacement
+  unique_strata <- unique(strata)
+  unlist(
+    lapply(unique_strata, function(s) {
+      inds <- which(strata == s)
+      sample(inds, size = length(inds), replace = TRUE)
+    })
+  )
+}

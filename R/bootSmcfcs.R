@@ -14,14 +14,17 @@
 #' @param nCores The number of CPU cores to use. If specified greater than one,
 #' bootImpute will impute using the number of cores specified.
 #' @param seed Random number seed.
+#' @param strata Character name of variable to perform stratified resampling, if desired.
 #' @param ... Other arguments that are to be passed to \code{smcfcs}.
 #' @return A list of imputed datasets.
 #'
 #' @example data-raw/bootSmcfcsExamples.r
 #'
 #' @export
-bootSmcfcs <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL, ...) {
-  bootImpute(obsdata, smcfcsImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed, ...)
+bootSmcfcs <- function(obsdata, nBoot=200, nImp=2, nCores=1, seed=NULL,
+                       strata=NULL, ...) {
+  bootImpute(obsdata, smcfcsImpM, nBoot=nBoot, nImp=nImp, M=nImp, nCores=nCores, seed=seed,
+             strata=strata, ...)
 }
 
 #a function that imputes M times using smcfcs with the specified options
