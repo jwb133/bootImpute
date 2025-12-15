@@ -4,7 +4,15 @@
 \alias{bootMice}
 \title{Bootstrap then impute using mice}
 \usage{
-bootMice(obsdata, nBoot = 200, nImp = 2, nCores = 1, seed = NULL, ...)
+bootMice(
+  obsdata,
+  nBoot = 200,
+  nImp = 2,
+  nCores = 1,
+  seed = NULL,
+  strata = NULL,
+  ...
+)
 }
 \arguments{
 \item{obsdata}{The data frame to be imputed.}
@@ -20,6 +28,8 @@ is recommended.}
 bootImpute will impute using the number of cores specified.}
 
 \item{seed}{Random number seed.}
+
+\item{strata}{Character name of variable to perform stratified resampling, if desired.}
 
 \item{...}{Other arguments that are to be passed to \code{mice}.}
 }

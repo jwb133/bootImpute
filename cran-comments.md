@@ -1,7 +1,7 @@
 ## Test environments
-* local Mac install version 4.4.3
-* Winbuilder version 4.4.3 (2025-02-28 ucrt)
-* Winbuilder version 4.5.0 alpha (2025-03-24 r88048 ucrt)
+* local Mac install version 4.5.2
+* Winbuilder R Under development (unstable) (2025-12-14 r89168 ucrt)
+* Winbuilder R version 4.5.2 (2025-10-31 ucrt)
 
 ## R CMD check results
 All ok.

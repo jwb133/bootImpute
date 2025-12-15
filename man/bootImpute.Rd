@@ -11,6 +11,7 @@ bootImpute(
   nImp = 2,
   nCores = 1,
   seed = NULL,
+  strata = NULL,
   ...
 )
 }
@@ -31,6 +32,8 @@ is recommended.}
 \code{bootImpute} will impute using the number of cores specified.}
 
 \item{seed}{Random number seed.}
+
+\item{strata}{Character name of variable to perform stratified resampling, if desired.}
 
 \item{...}{Other parameters that are to be passed through to \code{impfun},
 which will often include the argument that tells \code{impfun} to generate
