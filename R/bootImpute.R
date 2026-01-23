@@ -230,21 +230,23 @@ bootImputeAnalyse <- function(imps, analysisfun, nCores=1, quiet=FALSE, ...) {
   var <- array(0, dim=nParms)
   ci <- array(0, dim=c(nParms,2))
   df <- array(0, dim=nParms)
+  resVar <- array(0, dim=nParms)
+  randIntVar <- array(0, dim=nParms)
 
   for (i in 1:nParms) {
     SSW <- sum((ests[,,i]-rowMeans(ests[,,i]))^2)
     SSB <- nImp*sum((rowMeans(ests[,,i])-mean(ests[,,i]))^2)
     MSW <- SSW/(nBoot*(nImp-1))
     MSB <- SSB/(nBoot-1)
-    resVar <- MSW
-    randIntVar <- (MSB-MSW)/nImp
-    if (randIntVar <= 0) {
+    resVar[i] <- MSW
+    randIntVar[i] <- (MSB-MSW)/nImp
+    if (randIntVar[i] <= 0) {
       warning(paste("Parameter ",i," has an estimated between bootstrap variance of zero. You should re-run with a larger nBoot value.",sep=""))
-      randIntVar <- 0
-      resVar <- (SSW+SSB)/(nBoot*nImp-1)
+      randIntVar[i] <- 0
+      resVar[i] <- (SSW+SSB)/(nBoot*nImp-1)
     }
     est[i] <- mean(ests[,,i])
-    var[i] <- (1+1/nBoot)*randIntVar + resVar/(nBoot*nImp)
+    var[i] <- (1+1/nBoot)*randIntVar[i] + resVar[i]/(nBoot*nImp)
     df[i] <- (var[i]^2)/((((nBoot+1)/(nBoot*nImp))^2*MSB^2 / (nBoot-1)) + MSW^2/(nBoot*nImp^2*(nImp-1)))
     #prevent df from going below 3
     df[i] <- max(3,df[i])
@@ -264,7 +266,8 @@ bootImputeAnalyse <- function(imps, analysisfun, nCores=1, quiet=FALSE, ...) {
     print(resTable)
   }
 
-  list(ests=est, var=var, ci=ci, df=df)
+  list(ests=est, var=var, ci=ci, df=df,
+       resVar=resVar, randIntVar=randIntVar)
 
 }
 
